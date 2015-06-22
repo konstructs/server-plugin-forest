@@ -20,7 +20,7 @@ public class MyPlugin extends UntypedActor {
         if(message instanceof SayFilter) {
             SayFilter say = (SayFilter)message;
             String text = say.message().text();
-            say.continueWith(new Say("Did you just say: " + text + "?"), getSender());
+            say.continueWith(new Say(text + " <- " + responseText), getSender());
         } else {
             unhandled(message);
         }
