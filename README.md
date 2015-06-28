@@ -1,2 +1,2 @@
-# server-plugin-java-template
-This a template to be used when writing plugns for the server in Java
+# server-plugin-forest
+Manage trees in the world, grow them and make new ones.
