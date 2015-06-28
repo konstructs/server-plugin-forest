@@ -10,7 +10,7 @@ import konstructs.api.Say;
 /* An example plugin for the konstructs server
  *
  * A plugin in konstructs is an Akka actor. Therefore it extends
- * UntypedActor. An Actor it's a normal Java class, but with one
+ * UntypedActor. An Actor is a normal Java class, but with one
  * additional method: "onReceive". This method is the entry point of
  * the plugin. Whenever there is a server event that the plugin is
  * interested in, it will be sent to this method. In this example, the
