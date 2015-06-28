@@ -2,6 +2,7 @@ package org.konstructs.forest;
 
 import akka.actor.UntypedActor;
 import akka.actor.Props;
+import akka.actor.ActorRef;
 import konstructs.plugin.Config;
 import konstructs.plugin.PluginConstructor;
 
@@ -17,7 +18,7 @@ public class ForestManager extends UntypedActor {
     }
 
     @PluginConstructor
-    public static Props props(String pluginName) {
+    public static Props props(String pluginName, ActorRef universe) {
         return Props.create(ForestManager.class);
     }
 }
