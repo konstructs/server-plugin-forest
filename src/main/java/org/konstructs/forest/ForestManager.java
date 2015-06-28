@@ -11,14 +11,17 @@ import konstructs.plugin.PluginConstructor;
 public class ForestManager extends UntypedActor {
 
     public ForestManager() {
+        System.out.println("Okay, I'm loaded now");
     }
 
     public void onReceive(Object message) {
+        System.out.println("Hello there! I got a message.");
         unhandled(message);
     }
 
     @PluginConstructor
     public static Props props(String pluginName, ActorRef universe) {
+        System.out.println("Prop me!");
         return Props.create(ForestManager.class);
     }
 }
