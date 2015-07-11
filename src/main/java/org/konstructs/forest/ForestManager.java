@@ -17,6 +17,7 @@ public class ForestManager extends ActorManager {
     public void onBlockUpdate(BlockUpdate blockUpdate) {
         System.out.println(blockUpdate);
         if (blockUpdate.newW() == 37) {
+            destroyBlock(blockUpdate.pos());
             putBlocks(tree.buildTree(blockUpdate.pos()));
         }
     }
