@@ -39,10 +39,14 @@ public class ActorManager extends UntypedActor {
         System.out.println("called onBlockUpdate: not implemented");
     }
 
-    public void putBlock(Collection<PutBlock> blocks) {
+    public void putBlocks(Collection<PutBlock> blocks) {
         for (PutBlock b : blocks) {
-            universe.tell(b, getSender());
+            putBlock(b);
         }
+    }
+
+    public void putBlock(PutBlock b) {
+        universe.tell(b, getSender());
     }
 
 }
