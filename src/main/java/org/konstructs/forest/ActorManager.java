@@ -5,6 +5,7 @@ import akka.actor.UntypedActor;
 import konstructs.api.BlockUpdate;
 import konstructs.api.BlockPosition;
 import konstructs.api.PutBlock;
+import konstructs.api.GetBlock;
 import konstructs.api.DestroyBlock;
 import konstructs.Position;
 import java.util.Collection;
@@ -49,6 +50,14 @@ public class ActorManager extends UntypedActor {
 
     public void putBlock(PutBlock b) {
         universe.tell(b, getSender());
+    }
+
+    public void putBlock(Position p, int w) {
+        universe.tell(new PutBlock(p, w), getSender());
+    }
+
+    public void getBlock(Position p) {
+        universe.tell(new GetBlock(p), getSelf());
     }
 
     public void destroyBlock(Position p) {
