@@ -18,6 +18,9 @@ public class ActorManager extends UntypedActor {
         this.universe = universe;
     }
 
+    /**
+     * Called by Akka when we receive a message
+     */
     public void onReceive(Object message) {
 
         if (message instanceof BlockPosition) {
@@ -34,32 +37,59 @@ public class ActorManager extends UntypedActor {
 
     }
 
+    /**
+     * This function is called when we receive a BlockPosition message.
+     */
     public void onBlockPosition(BlockPosition blockPosition) {
         System.out.println("called onBlockPosition: not implemented");
     }
 
+    /**
+     * This function is called when we receive a BlockUpdate message.
+     */
     public void onBlockUpdate(BlockUpdate blockUpdate) {
         System.out.println("called onBlockUpdate: not implemented");
     }
 
+    /**
+     * Write a collection of blocks to the world.
+     * @param   blocks      A collection of blocks.
+     */
     public void putBlocks(Collection<PutBlock> blocks) {
         for (PutBlock b : blocks) {
             putBlock(b);
         }
     }
 
+    /**
+     * Write a single block to the world.
+     * @param   b   A block
+     */
     public void putBlock(PutBlock b) {
         universe.tell(b, getSender());
     }
 
+    /**
+     * Write a single block to the world.
+     * @param   p   The position of the block
+     * @param   w   The block type
+     */
     public void putBlock(Position p, int w) {
         universe.tell(new PutBlock(p, w), getSender());
     }
 
+    /**
+     * Ask the server for a block
+     * @param   p   The position
+     */
     public void getBlock(Position p) {
         universe.tell(new GetBlock(p), getSelf());
     }
 
+    /**
+     * Destroy a block.
+     * @param   p   The position
+     */
     public void destroyBlock(Position p) {
         universe.tell(new DestroyBlock(p), getSender());
     }

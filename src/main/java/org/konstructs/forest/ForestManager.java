@@ -20,7 +20,7 @@ public class ForestManager extends ActorManager {
     }
 
     /**
-     * Listens to block updates from the entire server
+     * Listens to block updates from the entire server.
      */
     public void onBlockUpdate(BlockUpdate blockUpdate) {
         if (blockUpdate.newW() == 37) {
