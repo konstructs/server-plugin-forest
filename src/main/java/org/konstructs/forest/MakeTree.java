@@ -17,9 +17,7 @@ import java.util.Collection;
 
 public class MakeTree {
 
-    public MakeTree() {}
-
-    public Collection<PutBlock> buildTree(Position pos) {
+    private LSystem getLSystem() {
         List<ProductionRule> rules = new ArrayList<ProductionRule>();
 
         rules.add(new DeterministicProductionRule("cc",
@@ -38,20 +36,28 @@ public class MakeTree {
         trunkGrowth.add(new ProbalisticProduction(40, "a[&[c][-c][--c][+c]]"));
         trunkGrowth.add(new ProbalisticProduction(60, "bbba"));
         rules.add(ProbabilisticProductionRule.fromList("aa", trunkGrowth));
-        LSystem l = LSystem.fromList(rules);
 
+        return LSystem.fromList(rules);
+    }
+
+    public String runGenerations(String str, int n) {
+        return getLSystem().iterate(str, n);
+    }
+
+
+    public String runGeneration(String str) {
+        return runGenerations(str, 1);
+    }
+
+    public Collection<PutBlock> runBlockMachine(String str, Position pos) {
         Map<Character, Integer> blockMapping = new HashMap<Character, Integer>();
         blockMapping.put('a', 5);
-        blockMapping.put('b', 6);
+        blockMapping.put('b', 5);
         blockMapping.put('c', 15);
-        blockMapping.put('d', 14);
+        blockMapping.put('d', 15);
         BlockMachine m = BlockMachine.fromJavaMap(blockMapping);
 
-        String tree = l.iterate("a[&[c][-c][--c][+c]]c", 7);
-
-        Collection<PutBlock> blocks = m.interpretJava(tree, pos.copy(pos.x(), pos.y() - 1, pos.z()));
-
-        return blocks;
+        return m.interpretJava(str, pos.copy(pos.x(), pos.y() - 1, pos.z()));
     }
 
 }

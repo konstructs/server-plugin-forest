@@ -7,7 +7,7 @@ import konstructs.plugin.PluginConstructor;
 import konstructs.api.BlockUpdate;
 import java.util.Random;
 
-public class ForestManager extends ActorManager {
+public class Forest extends ActorManager {
 
     MakeTree tree;
     int numberOfTrees;
