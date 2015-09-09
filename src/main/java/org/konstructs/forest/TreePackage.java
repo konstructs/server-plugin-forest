@@ -1,6 +1,6 @@
 package org.konstructs.forest;
 
-import konstructs.Position;
+import konstructs.api.Position;
 
 public class TreePackage {
 

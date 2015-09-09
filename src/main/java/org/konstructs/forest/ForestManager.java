@@ -2,12 +2,13 @@ package org.konstructs.forest;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
-import konstructs.Position;
 import konstructs.plugin.PluginConstructor;
-import konstructs.api.BlockUpdate;
+import konstructs.plugin.KonstructsActor;
+import konstructs.api.Position;
+import konstructs.api.BlockDataUpdate;
 import java.util.Random;
 
-public class ForestManager extends ActorManager {
+public class ForestManager extends KonstructsActor {
 
     MakeTree tree;
     int numberOfTrees;
@@ -80,7 +81,7 @@ public class ForestManager extends ActorManager {
      * Listens to block updates from the entire server.
      * If the trigger block is placed, schedule a tree.
      */
-    public void onBlockUpdate(BlockUpdate blockUpdate) {
+    public void onBlockDataUpdate(BlockDataUpdate blockUpdate) {
         if (blockUpdate.newW() == 19) {
             scheduleSelfOnce(new TreePackage("build-tree", blockUpdate.pos()),
                     new Random().nextInt(10) * 1000);

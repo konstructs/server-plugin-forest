@@ -11,7 +11,7 @@ import konstructs.LSystem;
 import konstructs.ProbabilisticProductionRule;
 import konstructs.ProbalisticProduction;
 import konstructs.ProductionRule;
-import konstructs.Position;
+import konstructs.api.Position;
 import konstructs.api.PutBlock;
 import java.util.Collection;
 
