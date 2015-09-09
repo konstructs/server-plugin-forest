@@ -4,11 +4,11 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import konstructs.plugin.PluginConstructor;
 import konstructs.plugin.KonstructsActor;
-import konstructs.api.Position;
 import konstructs.api.BlockDataUpdate;
+import konstructs.api.Position;
 import java.util.Random;
 
-public class ForestManager extends KonstructsActor {
+public class Forest extends KonstructsActor {
 
     MakeTree tree;
     int numberOfTrees;
@@ -16,7 +16,7 @@ public class ForestManager extends KonstructsActor {
     int treeSpawnRate;
     int stopAt;
 
-    public ForestManager(ActorRef uni) {
+    public Forest(ActorRef uni) {
         super(uni);
         tree = new MakeTree();
         numberOfTrees = 0;
