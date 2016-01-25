@@ -9,18 +9,17 @@ import konstructs.plugin.KonstructsActor;
 import konstructs.api.*;
 
 class CanATreeGrowHere extends KonstructsActor {
-    static final int TRUNK_RADI = 2;
-    static final int TRUNK_HEIGHT = 5;
-    static final int CROWN_RADI = 10;
-    static final int CROWN_HEIGHT = 20;
-
-    private Position position;
+    private final Position position;
+    private final ForestConfig config;
+    private final BlockTypeId leaves;
+    private final BlockTypeId vacuum = BlockTypeId.vacuum();
     private boolean trunkIsOk = false;
 
-    public CanATreeGrowHere(ActorRef universe, Position position) {
+    public CanATreeGrowHere(ActorRef universe, Position position, ForestConfig config) {
         super(universe);
         this.position = position;
-        System.out.println("Check for somewhere to grow!");
+        this.config = config;
+        this.leaves = config.getLeaves();
         queryForTrunk();
     }
 
@@ -37,29 +36,29 @@ class CanATreeGrowHere extends KonstructsActor {
     }
 
     private void queryForTrunk() {
-        query(TRUNK_RADI, TRUNK_HEIGHT, 1);
+        query(config.getTrunkRadi(), config.getTrunkHeight(), 0);
     }
 
     private void queryForCrown() {
-        query(CROWN_RADI, CROWN_HEIGHT, TRUNK_HEIGHT);
+        query(config.getCrownRadi(), config.getCrownHeight(), config.getTrunkHeight());
     }
 
     private void canGrow() {
         getContext().parent().tell(new PlantTree(position), getSelf());
-        System.out.println("Can grow here!");
         getContext().stop(getSelf()); /* We are done, let's die*/
     }
 
     private void canNotGrow() {
-        System.out.println("Can not grow here!");
+        replaceBlock(position, BlockTypeId.vacuum()); /* Remove the sapling */
         getContext().stop(getSelf()); /* We are done, let's die*/
     }
 
     @Override
     public void onBoxQueryResult(BoxQueryResult result) {
         for(Map.Entry<Position, BlockTypeId> p: result.result().toPlaced().entrySet()) {
-            if(!(p.getValue().equals(Forest.VACUUM_ID) ||
-                 p.getValue().equals(Forest.LEAVES_ID))) {
+            if(!(p.getValue().equals(vacuum) || // Ignore vacuum
+                 p.getValue().equals(leaves) || // Ignore leaves from the same sort of tree
+                 p.getKey().equals(position))) { // Ignore sapling at starting position
                 canNotGrow();
                 return;
             }
@@ -72,7 +71,7 @@ class CanATreeGrowHere extends KonstructsActor {
         }
     }
 
-    public static Props props(ActorRef universe, Position start) {
-        return Props.create(CanATreeGrowHere.class, universe, start);
+    public static Props props(ActorRef universe, Position start, ForestConfig config) {
+        return Props.create(CanATreeGrowHere.class, universe, start, config);
     }
 }
