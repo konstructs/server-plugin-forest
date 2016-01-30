@@ -20,6 +20,7 @@ public class ForestConfig {
     private final int minGrowthDelay;
     private final int randomGrowthDelay;
     private final int maxSeedsPerGeneration;
+    private final int randomGrowth;
 
     ForestConfig(String wood,
                  String leaves,
@@ -37,7 +38,8 @@ public class ForestConfig {
                  String initialState,
                  int minGrowthDelay,
                  int randomGrowthDelay,
-                 int maxSeedsPerGeneration) {
+                 int maxSeedsPerGeneration,
+                 int randomGrowth) {
         this.wood = BlockTypeId.fromString(wood);
         this.leaves = BlockTypeId.fromString(leaves);
         this.sapling = BlockTypeId.fromString(sapling);
@@ -55,6 +57,7 @@ public class ForestConfig {
         this.minGrowthDelay = minGrowthDelay;
         this.randomGrowthDelay = randomGrowthDelay;
         this.maxSeedsPerGeneration = maxSeedsPerGeneration;
+        this.randomGrowth = randomGrowth;
     }
 
     public BlockTypeId getWood() {
@@ -107,6 +110,9 @@ public class ForestConfig {
     }
     public int getMaxSeedsPerGeneration() {
         return maxSeedsPerGeneration;
+    }
+    public int getRandomGrowth() {
+        return randomGrowth;
     }
 
 }

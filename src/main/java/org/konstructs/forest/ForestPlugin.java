@@ -1,6 +1,7 @@
 package org.konstructs.forest;
 
 import java.util.Map;
+import java.util.Random;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
@@ -13,11 +14,15 @@ public class ForestPlugin extends KonstructsActor {
     private final ForestConfig config;
     private final BlockTypeId growsOn;
     private final BlockTypeId sapling;
+    private final int randomGrowth;
+    private final Random random = new Random();
+
     public ForestPlugin(String name, ActorRef universe, ForestConfig config) {
         super(universe);
         this.config = config;
         this.growsOn = config.getGrowsOn();
         this.sapling = config.getSapling();
+        this.randomGrowth = config.getRandomGrowth();
     }
 
     void tryToSeed(Position pos) {
@@ -49,10 +54,15 @@ public class ForestPlugin extends KonstructsActor {
 
     @Override
     public void onBoxQueryResult(BoxQueryResult result) {
-        for(Map.Entry<Position, BlockTypeId> p: result.result().toPlaced().entrySet()) {
+        Map<Position, BlockTypeId> placed = result.result().toPlaced();
+        for(Map.Entry<Position, BlockTypeId> p: placed.entrySet()) {
             if(p.getValue().equals(growsOn)) {
-                seed(p.getKey().incY(1));
-                return;
+                Position pos = p.getKey().incY(1);
+                BlockTypeId above = placed.get(pos);
+                if(above != null && above.equals(BlockTypeId.vacuum())) {
+                    seed(pos);
+                    return;
+                }
             }
         }
     }
@@ -62,6 +72,9 @@ public class ForestPlugin extends KonstructsActor {
         for(Map.Entry<Position, BlockTypeId> p: update.blocks().entrySet()) {
             if(p.getValue().equals(sapling)) {
                 seeded(p.getKey());
+            } else if(p.getValue().equals(growsOn) &&
+                      random.nextInt(1000) <= randomGrowth) {
+                tryToSeed(p.getKey());
             }
         }
     }
@@ -106,7 +119,8 @@ public class ForestPlugin extends KonstructsActor {
               @Config(key = "initial-state") String initialState,
               @Config(key = "min-growth-delay") int minGrowthDelay,
               @Config(key = "random-growth-delay") int randomGrowthDelay,
-              @Config(key = "max-seeds-per-generation") int maxSeedsPerGeneration
+              @Config(key = "max-seeds-per-generation") int maxSeedsPerGeneration,
+              @Config(key = "random-growth") int randomGrowth
               ) {
         Class currentClass = new Object() { }.getClass().getEnclosingClass();
         ForestConfig config =
@@ -127,7 +141,8 @@ public class ForestPlugin extends KonstructsActor {
                              initialState,
                              minGrowthDelay,
                              randomGrowthDelay,
-                             maxSeedsPerGeneration);
+                             maxSeedsPerGeneration,
+                             randomGrowth);
         return Props.create(currentClass, pluginName, universe, config);
     }
 }
