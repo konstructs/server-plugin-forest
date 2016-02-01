@@ -60,7 +60,7 @@ class Tree extends KonstructsActor {
             /* Tree need to grow more */
             scheduleSelfOnce(new GrowTree(generation),
                              config.getMinGrowthDelay() * 1000 +
-                             new Random().nextInt(config.getRandomGrowthDelay()) * 1000);
+                             r.nextInt(config.getRandomGrowthDelay()) * 1000);
         }
     }
 

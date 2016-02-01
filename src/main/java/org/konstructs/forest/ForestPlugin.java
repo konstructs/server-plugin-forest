@@ -74,7 +74,10 @@ public class ForestPlugin extends KonstructsActor {
                 seeded(p.getKey());
             } else if(p.getValue().equals(growsOn) &&
                       random.nextInt(1000) <= randomGrowth) {
-                tryToSeed(p.getKey());
+                /* Try to seed a new tree */
+                scheduleSelfOnce(new TryToSeedTree(p.getKey()),
+                                 config.getMinGrowthDelay() * 1000 +
+                                 random.nextInt(config.getRandomGrowthDelay()) * 1000);
             }
         }
     }
