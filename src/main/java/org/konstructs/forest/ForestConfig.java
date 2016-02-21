@@ -1,7 +1,5 @@
 package konstructs.forest;
 
-import java.time.Duration;
-
 import konstructs.api.BlockTypeId;
 
 public class ForestConfig {
