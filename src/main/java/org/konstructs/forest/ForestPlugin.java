@@ -67,6 +67,9 @@ public class ForestPlugin extends KonstructsActor {
     }
 
     @Override
+    public void onEventBlockRemoved(EventBlockRemoved block) {}
+
+    @Override
     public void onReceive(Object message) {
         if(message instanceof SeedTree) {
             SeedTree seedTree = (SeedTree)message;
