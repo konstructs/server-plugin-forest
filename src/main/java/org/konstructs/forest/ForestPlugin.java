@@ -1,4 +1,4 @@
-package konstructs.forest;
+package org.konstructs.forest;
 
 import java.util.Map;
 

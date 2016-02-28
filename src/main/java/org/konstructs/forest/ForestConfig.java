@@ -1,4 +1,4 @@
-package konstructs.forest;
+package org.konstructs.forest;
 
 import konstructs.api.BlockTypeId;
 
