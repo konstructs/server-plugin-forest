@@ -17,6 +17,7 @@ import konstructs.utils.ProbalisticProduction;
 import konstructs.utils.ProductionRule;
 import konstructs.plugin.KonstructsActor;
 import konstructs.api.*;
+import konstructs.api.messages.ViewBlockResult;
 
 class Tree extends KonstructsActor {
     private static final LSystem SYSTEM = getLSystem();
@@ -39,7 +40,7 @@ class Tree extends KonstructsActor {
                       config.getMinGenerations());
         viewBlock(sapling);
         this.forestBlocks = BlockFilterFactory
-            .vacuum()
+            .VACUUM
             .or(BlockFilterFactory
                 .withBlockTypeId(config.getLeaves()))
             .or(BlockFilterFactory
@@ -68,9 +69,7 @@ class Tree extends KonstructsActor {
         /* Plant seeds */
         int seeds = r.nextInt(config.getMaxSeedsPerGeneration() + 1);
         for(int i = 0; i < seeds; i++) {
-            Position p = new Position(position.x() + nextRandomSeedDistance(),
-                                      position.y(),
-                                      position.z() + nextRandomSeedDistance());
+            Position p = position.add(new Position(nextRandomSeedDistance(),0, nextRandomSeedDistance()));
             getContext().parent().tell(new TryToSeedTree(p), getSelf());
         }
     }
@@ -80,14 +79,14 @@ class Tree extends KonstructsActor {
             BlockMachine.vacuumMachine().interpretJava(state, position);
         state = SYSTEM.iterate(state, 1);
         removeOldBlocks.putAll(machine.interpretJava(state, position));
-        replaceBlocks(removeOldBlocks, forestBlocks);
+        replaceBlocks(forestBlocks, removeOldBlocks);
         seed();
         scheduleGrowth(generation + 1);
     }
 
-    public void onBlockViewed(BlockViewed block) {
+    public void onViewBlockResult(ViewBlockResult result) {
 
-        if(block.block().type().equals(config.getSapling())) {
+        if(result.getBlock().getType().equals(config.getSapling())) {
             scheduleGrowth(0);
         } else {
             getContext().stop(getSelf()); /* Someone removed the sapling */
