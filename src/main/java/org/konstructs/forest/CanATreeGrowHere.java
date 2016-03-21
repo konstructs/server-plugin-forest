@@ -39,7 +39,7 @@ class CanATreeGrowHere extends KonstructsActor {
     }
 
     private void queryForTrunk() {
-        query(config.getTrunkRadi(), config.getTrunkHeight(), 0);
+        query(config.getTrunkRadi(), config.getTrunkHeight(), 1);
     }
 
     private void queryForCrown() {
