@@ -37,7 +37,9 @@ public class ForestPlugin extends KonstructsActor {
                          Math.min(pos.getY() + config.getSeedHeightDifference(),
                                   config.getMaxSeedHeight()),
                          pos.getZ() + 1);
-        boxQuery(new Box(start, end));
+        // Only run query if within the possible height band
+        if(start.getY() < end.getY())
+            boxQuery(new Box(start, end));
     }
 
     void seeded(Position pos) {
@@ -71,7 +73,7 @@ public class ForestPlugin extends KonstructsActor {
     @Override
     public void onBlockUpdateEvent(BlockUpdateEvent update) {
         for(Map.Entry<Position, BlockUpdate> p: update.getUpdatedBlocks().entrySet()) {
-            Block after = p.getValue().getAfter();
+            BlockTypeId after = p.getValue().getAfter().getType();
             if(after.equals(sapling)) {
                 seeded(p.getKey());
             } else if(after.equals(growsOn) &&
