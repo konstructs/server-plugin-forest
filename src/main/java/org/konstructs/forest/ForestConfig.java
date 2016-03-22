@@ -5,6 +5,7 @@ import konstructs.api.BlockTypeId;
 public class ForestConfig {
     private final BlockTypeId wood;
     private final BlockTypeId leaves;
+    private final BlockTypeId thinLeaves;
     private final BlockTypeId sapling;
     private final BlockTypeId growsOn;
     private final int seedHeightDifference;
@@ -24,6 +25,7 @@ public class ForestConfig {
 
     ForestConfig(String wood,
                  String leaves,
+                 String thinLeaves,
                  String sapling,
                  String growsOn,
                  int seedHeightDifference,
@@ -42,6 +44,7 @@ public class ForestConfig {
                  int randomGrowth) {
         this.wood = BlockTypeId.fromString(wood);
         this.leaves = BlockTypeId.fromString(leaves);
+        this.thinLeaves = BlockTypeId.fromString(thinLeaves);
         this.sapling = BlockTypeId.fromString(sapling);
         this.growsOn = BlockTypeId.fromString(growsOn);
         this.seedHeightDifference = seedHeightDifference;
@@ -65,6 +68,9 @@ public class ForestConfig {
     }
     public BlockTypeId getLeaves() {
         return leaves;
+    }
+    public BlockTypeId getThinLeaves() {
+        return thinLeaves;
     }
     public BlockTypeId getSapling() {
         return sapling;

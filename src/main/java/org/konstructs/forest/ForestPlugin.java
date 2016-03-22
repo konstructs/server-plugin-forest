@@ -113,6 +113,7 @@ public class ForestPlugin extends KonstructsActor {
               ActorRef universe,
               @Config(key = "wood-block") String wood,
               @Config(key = "leaves-block") String leaves,
+              @Config(key = "thin-leaves-block") String thinLeaves,
               @Config(key = "sapling-block") String sapling,
               @Config(key = "grows-on") String growsOn,
               @Config(key = "max-seed-height-difference") int seedHeightDifference,
@@ -135,6 +136,7 @@ public class ForestPlugin extends KonstructsActor {
             new ForestConfig(
                              wood,
                              leaves,
+                             thinLeaves,
                              sapling,
                              growsOn,
                              seedHeightDifference,
