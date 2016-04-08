@@ -13,7 +13,7 @@ import konstructs.utils.BlockMachine;
 import konstructs.utils.DeterministicProductionRule;
 import konstructs.utils.LSystem;
 import konstructs.utils.ProbabilisticProductionRule;
-import konstructs.utils.ProbalisticProduction;
+import konstructs.utils.ProbabilisticProduction;
 import konstructs.utils.ProductionRule;
 import konstructs.plugin.KonstructsActor;
 import konstructs.api.*;
@@ -76,9 +76,9 @@ class Tree extends KonstructsActor {
 
     private void grow(int generation) {
         Map<Position, BlockTypeId> removeOldBlocks =
-            BlockMachine.vacuumMachine().interpretJava(state, position);
-        state = SYSTEM.iterate(state, 1);
-        removeOldBlocks.putAll(machine.interpretJava(state, position));
+            BlockMachine.VACUUM_MACHINE.interpret(state, position);
+        state = SYSTEM.iterate(state);
+        removeOldBlocks.putAll(machine.interpret(state, position));
         replaceBlocks(forestBlocks, removeOldBlocks);
         seed();
         scheduleGrowth(generation + 1);
@@ -109,26 +109,28 @@ class Tree extends KonstructsActor {
     }
 
     private static LSystem getLSystem() {
-        List<ProductionRule> rules = new ArrayList<ProductionRule>();
+        ProbabilisticProduction leafGrowthDirections[] = {
+            new ProbabilisticProduction(20, "c[&[d]]"),
+            new ProbabilisticProduction(20, "c[&[+d]]"),
+            new ProbabilisticProduction(20, "c[&[-d]]"),
+            new ProbabilisticProduction(20, "c[&[--d]]"),
+            new ProbabilisticProduction(20, "cc")
+        };
 
-        rules.add(new DeterministicProductionRule("cc",
-                    "c[&[c][-c][--c][+c]]c[&[c][-c][--c][+c]]"));
-        rules.add(new DeterministicProductionRule("a", "aa"));
+        ProbabilisticProduction trunkGrowth[] = {
+            new ProbabilisticProduction(40, "a[&[c][-c][--c][+c]]"),
+            new ProbabilisticProduction(60, "bbba")
+        };
 
-        List<ProbalisticProduction> leafGrowthDirections = new ArrayList<ProbalisticProduction>();
-        leafGrowthDirections.add(new ProbalisticProduction(20, "c[&[d]]"));
-        leafGrowthDirections.add(new ProbalisticProduction(20, "c[&[+d]]"));
-        leafGrowthDirections.add(new ProbalisticProduction(20, "c[&[-d]]"));
-        leafGrowthDirections.add(new ProbalisticProduction(20, "c[&[--d]]"));
-        leafGrowthDirections.add(new ProbalisticProduction(20, "cc"));
-        rules.add(ProbabilisticProductionRule.fromList("c", leafGrowthDirections));
+        ProductionRule[] rules = {
+            new DeterministicProductionRule("cc",
+                                            "c[&[c][-c][--c][+c]]c[&[c][-c][--c][+c]]"),
+            new DeterministicProductionRule("a", "aa"),
+            new ProbabilisticProductionRule("c", leafGrowthDirections),
+            new ProbabilisticProductionRule("aa", trunkGrowth)
+        };
 
-        List<ProbalisticProduction> trunkGrowth = new ArrayList<ProbalisticProduction>();
-        trunkGrowth.add(new ProbalisticProduction(40, "a[&[c][-c][--c][+c]]"));
-        trunkGrowth.add(new ProbalisticProduction(60, "bbba"));
-        rules.add(ProbabilisticProductionRule.fromList("aa", trunkGrowth));
-
-        return LSystem.fromList(rules);
+        return new LSystem(rules);
     }
 
     private static BlockMachine getBlockMachine(ForestConfig config) {
@@ -137,6 +139,6 @@ class Tree extends KonstructsActor {
         blockMapping.put('b', config.getWood());
         blockMapping.put('c', config.getLeaves());
         blockMapping.put('d', config.getLeaves());
-        return BlockMachine.fromJavaMap(blockMapping);
+        return new BlockMachine(blockMapping);
     }
 }
