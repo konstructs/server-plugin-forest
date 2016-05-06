@@ -9,6 +9,7 @@ import konstructs.plugin.KonstructsActor;
 import konstructs.plugin.PluginConstructor;
 import konstructs.plugin.Config;
 import konstructs.api.*;
+import konstructs.api.messages.*;
 
 public class ForestPlugin extends KonstructsActor {
     private final ForestConfig config;
@@ -16,6 +17,7 @@ public class ForestPlugin extends KonstructsActor {
     private final BlockTypeId sapling;
     private final int randomGrowth;
     private final Random random = new Random();
+    private float speed = GlobalConfig.DEFAULT_SIMULATION_SPEED;
 
     public ForestPlugin(String name, ActorRef universe, ForestConfig config) {
         super(universe);
@@ -27,16 +29,16 @@ public class ForestPlugin extends KonstructsActor {
 
     void tryToSeed(Position pos) {
         Position start =
-            new Position(pos.x(),
-                         Math.max(pos.y() - config.getSeedHeightDifference(),
-                                  config.getMinSeedHeight()),
-                         pos.z());
+            pos.withY(Math.max(pos.getY() - config.getSeedHeightDifference(),
+                               config.getMinSeedHeight()));
         Position end =
-            new Position(pos.x() + 1,
-                         Math.min(pos.y() + config.getSeedHeightDifference(),
+            new Position(pos.getX() + 1,
+                         Math.min(pos.getY() + config.getSeedHeightDifference(),
                                   config.getMaxSeedHeight()),
-                         pos.z() + 1);
-        boxQuery(start, end);
+                         pos.getZ() + 1);
+        // Only run query if within the possible height band
+        if(start.getY() < end.getY())
+            boxQuery(new Box(start, end));
     }
 
     void seeded(Position pos) {
@@ -44,22 +46,22 @@ public class ForestPlugin extends KonstructsActor {
     }
 
     void seed(Position pos) {
-        putBlock(pos, Block.create(sapling));
+        replaceVacuumBlock(pos, Block.create(sapling));
         seeded(pos);
     }
 
     void plant(Position pos) {
-        getContext().actorOf(Tree.props(getUniverse(), pos, config));
+        getContext().actorOf(Tree.props(getUniverse(), pos, config, speed));
     }
 
     @Override
     public void onBoxQueryResult(BoxQueryResult result) {
-        Map<Position, BlockTypeId> placed = result.result().toPlaced();
+        Map<Position, BlockTypeId> placed = result.getAsMap();
         for(Map.Entry<Position, BlockTypeId> p: placed.entrySet()) {
             if(p.getValue().equals(growsOn)) {
-                Position pos = p.getKey().incY(1);
+                Position pos = p.getKey().addY(1);
                 BlockTypeId above = placed.get(pos);
-                if(above != null && above.equals(BlockTypeId.vacuum())) {
+                if(above != null && above.equals(BlockTypeId.VACUUM)) {
                     seed(pos);
                     return;
                 }
@@ -68,22 +70,25 @@ public class ForestPlugin extends KonstructsActor {
     }
 
     @Override
-    public void onEventBlockUpdated(EventBlockUpdated update) {
-        for(Map.Entry<Position, BlockTypeId> p: update.blocks().entrySet()) {
-            if(p.getValue().equals(sapling)) {
+    public void onBlockUpdateEvent(BlockUpdateEvent update) {
+        for(Map.Entry<Position, BlockUpdate> p: update.getUpdatedBlocks().entrySet()) {
+            BlockTypeId after = p.getValue().getAfter().getType();
+            if(after.equals(sapling)) {
                 seeded(p.getKey());
-            } else if(p.getValue().equals(growsOn) &&
+            } else if(after.equals(growsOn) &&
                       random.nextInt(1000) <= randomGrowth) {
                 /* Try to seed a new tree */
                 scheduleSelfOnce(new TryToSeedTree(p.getKey()),
-                                 config.getMinGrowthDelay() * 1000 +
-                                 random.nextInt(config.getRandomGrowthDelay()) * 1000);
+                                 (int)((float)(config.getMinGrowthDelay() * 1000 +
+                                               random.nextInt(config.getRandomGrowthDelay()) * 1000) / speed));
             }
         }
     }
 
     @Override
-    public void onEventBlockRemoved(EventBlockRemoved block) {}
+    public void onGlobalConfig(GlobalConfig config) {
+        speed = config.getSimulationSpeed();
+    }
 
     @Override
     public void onReceive(Object message) {
