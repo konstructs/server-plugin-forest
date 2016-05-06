@@ -28,9 +28,10 @@ class Tree extends KonstructsActor {
     private final Position position;
     private final ForestConfig config;
     private final int maxGenerations;
+    private final float speed;
     private String state;
 
-    public Tree(ActorRef universe, Position sapling, ForestConfig config) {
+    public Tree(ActorRef universe, Position sapling, ForestConfig config, float speed) {
         super(universe);
         this.position = sapling;
         this.config = config;
@@ -46,6 +47,7 @@ class Tree extends KonstructsActor {
             .or(BlockFilterFactory
                 .withBlockTypeId(config.getSapling()));
         this.machine = getBlockMachine(config);
+        this.speed = speed;
     }
 
     private int nextRandomSeedDistance() {
@@ -60,8 +62,8 @@ class Tree extends KonstructsActor {
         } else {
             /* Tree need to grow more */
             scheduleSelfOnce(new GrowTree(generation),
-                             config.getMinGrowthDelay() * 1000 +
-                             r.nextInt(config.getRandomGrowthDelay()) * 1000);
+                             (int)((float)(config.getMinGrowthDelay() * 1000 +
+                              r.nextInt(config.getRandomGrowthDelay()) * 1000) / speed));
         }
     }
 
@@ -104,8 +106,8 @@ class Tree extends KonstructsActor {
     }
 
 
-    public static Props props(ActorRef universe, Position start, ForestConfig config) {
-        return Props.create(Tree.class, universe, start, config);
+    public static Props props(ActorRef universe, Position start, ForestConfig config, float speed) {
+        return Props.create(Tree.class, universe, start, config, speed);
     }
 
     private static LSystem getLSystem() {

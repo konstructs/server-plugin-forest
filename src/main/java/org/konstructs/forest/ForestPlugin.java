@@ -9,9 +9,7 @@ import konstructs.plugin.KonstructsActor;
 import konstructs.plugin.PluginConstructor;
 import konstructs.plugin.Config;
 import konstructs.api.*;
-import konstructs.api.messages.ReplaceBlock;
-import konstructs.api.messages.BlockUpdateEvent;
-import konstructs.api.messages.BoxQueryResult;
+import konstructs.api.messages.*;
 
 public class ForestPlugin extends KonstructsActor {
     private final ForestConfig config;
@@ -19,6 +17,7 @@ public class ForestPlugin extends KonstructsActor {
     private final BlockTypeId sapling;
     private final int randomGrowth;
     private final Random random = new Random();
+    private float speed = GlobalConfig.DEFAULT_SIMULATION_SPEED;
 
     public ForestPlugin(String name, ActorRef universe, ForestConfig config) {
         super(universe);
@@ -52,7 +51,7 @@ public class ForestPlugin extends KonstructsActor {
     }
 
     void plant(Position pos) {
-        getContext().actorOf(Tree.props(getUniverse(), pos, config));
+        getContext().actorOf(Tree.props(getUniverse(), pos, config, speed));
     }
 
     @Override
@@ -80,10 +79,15 @@ public class ForestPlugin extends KonstructsActor {
                       random.nextInt(1000) <= randomGrowth) {
                 /* Try to seed a new tree */
                 scheduleSelfOnce(new TryToSeedTree(p.getKey()),
-                                 config.getMinGrowthDelay() * 1000 +
-                                 random.nextInt(config.getRandomGrowthDelay()) * 1000);
+                                 (int)((float)(config.getMinGrowthDelay() * 1000 +
+                                               random.nextInt(config.getRandomGrowthDelay()) * 1000) / speed));
             }
         }
+    }
+
+    @Override
+    public void onGlobalConfig(GlobalConfig config) {
+        speed = config.getSimulationSpeed();
     }
 
     @Override
