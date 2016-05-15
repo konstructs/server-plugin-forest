@@ -8,9 +8,8 @@ public class ForestConfig {
     private final BlockTypeId thinLeaves;
     private final BlockTypeId sapling;
     private final BlockTypeId growsOn;
+    private final BlockTypeId seedsOn;
     private final int seedHeightDifference;
-    private final int maxSeedHeight;
-    private final int minSeedHeight;
     private final int maxGenerations;
     private final int minGenerations;
     private final int trunkRadi;
@@ -21,6 +20,7 @@ public class ForestConfig {
     private final int minGrowthDelay;
     private final int randomGrowthDelay;
     private final int maxSeedsPerGeneration;
+    private final int seedEveryGeneration;
     private final int randomGrowth;
 
     ForestConfig(String wood,
@@ -28,9 +28,8 @@ public class ForestConfig {
                  String thinLeaves,
                  String sapling,
                  String growsOn,
+                 String seedsOn,
                  int seedHeightDifference,
-                 int maxSeedHeight,
-                 int minSeedHeight,
                  int maxGenerations,
                  int minGenerations,
                  int trunkRadi,
@@ -41,15 +40,15 @@ public class ForestConfig {
                  int minGrowthDelay,
                  int randomGrowthDelay,
                  int maxSeedsPerGeneration,
+                 int seedEveryGeneration,
                  int randomGrowth) {
         this.wood = BlockTypeId.fromString(wood);
         this.leaves = BlockTypeId.fromString(leaves);
         this.thinLeaves = BlockTypeId.fromString(thinLeaves);
         this.sapling = BlockTypeId.fromString(sapling);
         this.growsOn = BlockTypeId.fromString(growsOn);
+        this.seedsOn = BlockTypeId.fromString(seedsOn);
         this.seedHeightDifference = seedHeightDifference;
-        this.maxSeedHeight = maxSeedHeight;
-        this.minSeedHeight = minSeedHeight;
         this.maxGenerations = maxGenerations;
         this.minGenerations = minGenerations;
         this.trunkRadi = trunkRadi;
@@ -60,6 +59,7 @@ public class ForestConfig {
         this.minGrowthDelay = minGrowthDelay;
         this.randomGrowthDelay = randomGrowthDelay;
         this.maxSeedsPerGeneration = maxSeedsPerGeneration;
+        this.seedEveryGeneration = seedEveryGeneration;
         this.randomGrowth = randomGrowth;
     }
 
@@ -78,14 +78,11 @@ public class ForestConfig {
     public BlockTypeId getGrowsOn() {
         return growsOn;
     }
+    public BlockTypeId getSeedsOn() {
+        return seedsOn;
+    }
     public int getSeedHeightDifference() {
         return seedHeightDifference;
-    }
-    public int getMaxSeedHeight() {
-        return maxSeedHeight;
-    }
-    public int getMinSeedHeight() {
-        return minSeedHeight;
     }
     public int getMaxGenerations() {
         return maxGenerations;
@@ -116,6 +113,9 @@ public class ForestConfig {
     }
     public int getMaxSeedsPerGeneration() {
         return maxSeedsPerGeneration;
+    }
+    public int getSeedEveryGeneration() {
+        return seedEveryGeneration;
     }
     public int getRandomGrowth() {
         return randomGrowth;
