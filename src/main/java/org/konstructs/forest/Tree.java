@@ -69,12 +69,15 @@ class Tree extends KonstructsActor {
         }
     }
 
-    private void seed() {
-        /* Plant seeds */
-        int seeds = r.nextInt(config.getMaxSeedsPerGeneration() + 1);
-        for(int i = 0; i < seeds; i++) {
-            Position p = position.add(new Position(nextRandomSeedDistance(),0, nextRandomSeedDistance()));
-            getContext().parent().tell(new TryToSeedTree(p), getSelf());
+    private void seed(int generation) {
+        /* Only try to seed every n:th generation */
+        if(generation % config.getSeedEveryGeneration() == 0) {
+            /* Plant seeds */
+            int seeds = r.nextInt(config.getMaxSeedsPerGeneration() + 1);
+            for(int i = 0; i < seeds; i++) {
+                Position p = position.add(new Position(nextRandomSeedDistance(),0, nextRandomSeedDistance()));
+                getContext().parent().tell(new TryToSeedTree(p), getSelf());
+            }
         }
     }
 
@@ -84,7 +87,7 @@ class Tree extends KonstructsActor {
         state = SYSTEM.iterate(state);
         removeOldBlocks.putAll(machine.interpret(state, position));
         replaceBlocks(forestBlocks, removeOldBlocks);
-        seed();
+        seed(generation);
         scheduleGrowth(generation + 1);
     }
 

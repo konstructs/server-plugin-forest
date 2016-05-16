@@ -14,6 +14,7 @@ import konstructs.api.messages.*;
 public class ForestPlugin extends KonstructsActor {
     private final ForestConfig config;
     private final BlockTypeId growsOn;
+    private final BlockTypeId seedsOn;
     private final BlockTypeId sapling;
     private final int randomGrowth;
     private final Random random = new Random();
@@ -23,22 +24,19 @@ public class ForestPlugin extends KonstructsActor {
         super(universe);
         this.config = config;
         this.growsOn = config.getGrowsOn();
+        this.seedsOn = config.getSeedsOn();
         this.sapling = config.getSapling();
         this.randomGrowth = config.getRandomGrowth();
     }
 
     void tryToSeed(Position pos) {
         Position start =
-            pos.withY(Math.max(pos.getY() - config.getSeedHeightDifference(),
-                               config.getMinSeedHeight()));
+            pos.withY(pos.getY() - config.getSeedHeightDifference());
         Position end =
             new Position(pos.getX() + 1,
-                         Math.min(pos.getY() + config.getSeedHeightDifference(),
-                                  config.getMaxSeedHeight()),
+                         pos.getY() + config.getSeedHeightDifference(),
                          pos.getZ() + 1);
-        // Only run query if within the possible height band
-        if(start.getY() < end.getY())
-            boxQuery(new Box(start, end));
+        boxQuery(new Box(start, end));
     }
 
     void seeded(Position pos) {
@@ -58,7 +56,7 @@ public class ForestPlugin extends KonstructsActor {
     public void onBoxQueryResult(BoxQueryResult result) {
         Map<Position, BlockTypeId> placed = result.getAsMap();
         for(Map.Entry<Position, BlockTypeId> p: placed.entrySet()) {
-            if(p.getValue().equals(growsOn)) {
+            if(p.getValue().equals(growsOn) || p.getValue().equals(seedsOn)) {
                 Position pos = p.getKey().addY(1);
                 BlockTypeId above = placed.get(pos);
                 if(above != null && above.equals(BlockTypeId.VACUUM)) {
@@ -76,7 +74,7 @@ public class ForestPlugin extends KonstructsActor {
             if(after.equals(sapling)) {
                 seeded(p.getKey());
             } else if(after.equals(growsOn) &&
-                      random.nextInt(1000) <= randomGrowth) {
+                      random.nextInt(10000) <= randomGrowth) {
                 /* Try to seed a new tree */
                 scheduleSelfOnce(new TryToSeedTree(p.getKey()),
                                  (int)((float)(config.getMinGrowthDelay() * 1000 +
@@ -116,9 +114,8 @@ public class ForestPlugin extends KonstructsActor {
               @Config(key = "thin-leaves-block") String thinLeaves,
               @Config(key = "sapling-block") String sapling,
               @Config(key = "grows-on") String growsOn,
+              @Config(key = "seeds-on") String seedsOn,
               @Config(key = "max-seed-height-difference") int seedHeightDifference,
-              @Config(key = "max-seed-height") int maxSeedHeight,
-              @Config(key = "min-seed-height") int minSeedHeight,
               @Config(key = "max-generations") int maxGenerations,
               @Config(key = "min-generations") int minGenerations,
               @Config(key = "trunk-radi") int trunkRadi,
@@ -129,6 +126,7 @@ public class ForestPlugin extends KonstructsActor {
               @Config(key = "min-growth-delay") int minGrowthDelay,
               @Config(key = "random-growth-delay") int randomGrowthDelay,
               @Config(key = "max-seeds-per-generation") int maxSeedsPerGeneration,
+              @Config(key = "seed-every-generation") int seedEveryGeneration,
               @Config(key = "random-growth") int randomGrowth
               ) {
         Class currentClass = new Object() { }.getClass().getEnclosingClass();
@@ -139,9 +137,8 @@ public class ForestPlugin extends KonstructsActor {
                              thinLeaves,
                              sapling,
                              growsOn,
+                             seedsOn,
                              seedHeightDifference,
-                             maxSeedHeight,
-                             minSeedHeight,
                              maxGenerations,
                              minGenerations,
                              trunkRadi,
@@ -152,6 +149,7 @@ public class ForestPlugin extends KonstructsActor {
                              minGrowthDelay,
                              randomGrowthDelay,
                              maxSeedsPerGeneration,
+                             seedEveryGeneration,
                              randomGrowth);
         return Props.create(currentClass, pluginName, universe, config);
     }
