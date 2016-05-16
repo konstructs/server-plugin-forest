@@ -13,6 +13,7 @@ class CanATreeGrowHere extends KonstructsActor {
     private final Position position;
     private final ForestConfig config;
     private final BlockTypeId leaves;
+    private final BlockTypeId thinLeaves;
     private final BlockTypeId vacuum = BlockTypeId.VACUUM;
     private final BlockFilter saplingFilter;
     private boolean trunkIsOk = false;
@@ -22,6 +23,7 @@ class CanATreeGrowHere extends KonstructsActor {
         this.position = position;
         this.config = config;
         this.leaves = config.getLeaves();
+        this.thinLeaves = config.getThinLeaves();
         this.saplingFilter = BlockFilterFactory.withBlockTypeId(config.getSapling());
         queryForTrunk();
     }
@@ -61,6 +63,7 @@ class CanATreeGrowHere extends KonstructsActor {
         for(Map.Entry<Position, BlockTypeId> p: result.getAsMap().entrySet()) {
             if(!(p.getValue().equals(vacuum) || // Ignore vacuum
                  p.getValue().equals(leaves) || // Ignore leaves from the same sort of tree
+                 p.getValue().equals(thinLeaves) || // Ignore thin leaves from the same sort of tree
                  p.getKey().equals(position))) { // Ignore sapling at starting position
                 canNotGrow();
                 return;

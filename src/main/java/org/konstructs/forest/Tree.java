@@ -45,6 +45,8 @@ class Tree extends KonstructsActor {
             .or(BlockFilterFactory
                 .withBlockTypeId(config.getLeaves()))
             .or(BlockFilterFactory
+                .withBlockTypeId(config.getThinLeaves()))
+            .or(BlockFilterFactory
                 .withBlockTypeId(config.getSapling()));
         this.machine = getBlockMachine(config);
         this.speed = speed;
@@ -140,7 +142,7 @@ class Tree extends KonstructsActor {
         blockMapping.put('a', config.getWood());
         blockMapping.put('b', config.getWood());
         blockMapping.put('c', config.getLeaves());
-        blockMapping.put('d', config.getLeaves());
+        blockMapping.put('d', config.getThinLeaves());
         return new BlockMachine(blockMapping);
     }
 }
