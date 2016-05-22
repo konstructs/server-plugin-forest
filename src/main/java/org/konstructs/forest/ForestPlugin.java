@@ -16,8 +16,11 @@ public class ForestPlugin extends KonstructsActor {
     private final BlockTypeId growsOn;
     private final BlockTypeId seedsOn;
     private final BlockTypeId sapling;
+    private final BlockTypeId wood;
     private final int randomGrowth;
     private final Random random = new Random();
+    private final ActorRef leafDecay;
+    private final Position leafDecayRadi;
     private float speed = GlobalConfig.DEFAULT_SIMULATION_SPEED;
 
     public ForestPlugin(String name, ActorRef universe, ForestConfig config) {
@@ -26,7 +29,11 @@ public class ForestPlugin extends KonstructsActor {
         this.growsOn = config.getGrowsOn();
         this.seedsOn = config.getSeedsOn();
         this.sapling = config.getSapling();
+        this.wood = config.getWood();
         this.randomGrowth = config.getRandomGrowth();
+        this.leafDecay = getContext().actorOf(LeafDecay.props(getUniverse(), config));
+        int radi = config.getCrownRadi() * 2;
+        this.leafDecayRadi = new Position(radi, radi, radi);
     }
 
     void tryToSeed(Position pos) {
@@ -71,7 +78,10 @@ public class ForestPlugin extends KonstructsActor {
     public void onBlockUpdateEvent(BlockUpdateEvent update) {
         for(Map.Entry<Position, BlockUpdate> p: update.getUpdatedBlocks().entrySet()) {
             BlockTypeId after = p.getValue().getAfter().getType();
-            if(after.equals(sapling)) {
+            BlockTypeId before = p.getValue().getBefore().getType();
+            if(before.equals(wood) && !after.equals(wood)) {
+                getUniverse().tell(new BoxQuery(Box.createAround(p.getKey(), leafDecayRadi)), leafDecay);
+            } else if(after.equals(sapling)) {
                 seeded(p.getKey());
             } else if(after.equals(growsOn) &&
                       random.nextInt(10000) <= randomGrowth) {
@@ -86,6 +96,7 @@ public class ForestPlugin extends KonstructsActor {
     @Override
     public void onGlobalConfig(GlobalConfig config) {
         speed = config.getSimulationSpeed();
+        leafDecay.forward(config, getContext());
     }
 
     @Override
@@ -127,7 +138,8 @@ public class ForestPlugin extends KonstructsActor {
               @Config(key = "random-growth-delay") int randomGrowthDelay,
               @Config(key = "max-seeds-per-generation") int maxSeedsPerGeneration,
               @Config(key = "seed-every-generation") int seedEveryGeneration,
-              @Config(key = "random-growth") int randomGrowth
+              @Config(key = "random-growth") int randomGrowth,
+              @Config(key = "leaf-decay-delay") int leafDecayDelay
               ) {
         Class currentClass = new Object() { }.getClass().getEnclosingClass();
         ForestConfig config =
@@ -150,7 +162,8 @@ public class ForestPlugin extends KonstructsActor {
                              randomGrowthDelay,
                              maxSeedsPerGeneration,
                              seedEveryGeneration,
-                             randomGrowth);
+                             randomGrowth,
+                             leafDecayDelay);
         return Props.create(currentClass, pluginName, universe, config);
     }
 }
