@@ -5,9 +5,11 @@ import java.util.Random;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
+
+import com.typesafe.config.Config;
+
 import konstructs.plugin.KonstructsActor;
 import konstructs.plugin.PluginConstructor;
-import konstructs.plugin.Config;
 import konstructs.api.*;
 import konstructs.api.messages.*;
 
@@ -117,53 +119,9 @@ public class ForestPlugin extends KonstructsActor {
 
     @PluginConstructor
     public static Props
-        props(
-              String pluginName,
-              ActorRef universe,
-              @Config(key = "wood-block") String wood,
-              @Config(key = "leaves-block") String leaves,
-              @Config(key = "thin-leaves-block") String thinLeaves,
-              @Config(key = "sapling-block") String sapling,
-              @Config(key = "grows-on") String growsOn,
-              @Config(key = "seeds-on") String seedsOn,
-              @Config(key = "max-seed-height-difference") int seedHeightDifference,
-              @Config(key = "max-generations") int maxGenerations,
-              @Config(key = "min-generations") int minGenerations,
-              @Config(key = "trunk-radi") int trunkRadi,
-              @Config(key = "trunk-height") int trunkHeight,
-              @Config(key = "crown-radi") int crownRadi,
-              @Config(key = "crown-height") int crownHeight,
-              @Config(key = "initial-state") String initialState,
-              @Config(key = "min-growth-delay") int minGrowthDelay,
-              @Config(key = "random-growth-delay") int randomGrowthDelay,
-              @Config(key = "max-seeds-per-generation") int maxSeedsPerGeneration,
-              @Config(key = "seed-every-generation") int seedEveryGeneration,
-              @Config(key = "random-growth") int randomGrowth,
-              @Config(key = "leaf-decay-delay") int leafDecayDelay
-              ) {
+        props(String pluginName, ActorRef universe, Config config) {
         Class currentClass = new Object() { }.getClass().getEnclosingClass();
-        ForestConfig config =
-            new ForestConfig(
-                             wood,
-                             leaves,
-                             thinLeaves,
-                             sapling,
-                             growsOn,
-                             seedsOn,
-                             seedHeightDifference,
-                             maxGenerations,
-                             minGenerations,
-                             trunkRadi,
-                             trunkHeight,
-                             crownRadi,
-                             crownHeight,
-                             initialState,
-                             minGrowthDelay,
-                             randomGrowthDelay,
-                             maxSeedsPerGeneration,
-                             seedEveryGeneration,
-                             randomGrowth,
-                             leafDecayDelay);
-        return Props.create(currentClass, pluginName, universe, config);
+        ForestConfig forestConfig = new ForestConfig(config);
+        return Props.create(currentClass, pluginName, universe, forestConfig);
     }
 }
