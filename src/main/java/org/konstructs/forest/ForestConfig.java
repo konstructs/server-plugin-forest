@@ -1,6 +1,7 @@
 package org.konstructs.forest;
 
 import konstructs.api.BlockTypeId;
+import com.typesafe.config.Config;
 
 public class ForestConfig {
     private final BlockTypeId wood;
@@ -23,6 +24,29 @@ public class ForestConfig {
     private final int seedEveryGeneration;
     private final int randomGrowth;
     private final int leafDecayDelay;
+
+    ForestConfig(Config config) {
+        this(config.getString("wood-block"),
+             config.getString("leaves-block"),
+             config.getString("thin-leaves-block"),
+             config.getString("sapling-block"),
+             config.getString("grows-on"),
+             config.getString("seeds-on"),
+             config.getInt("max-seed-height-difference"),
+             config.getInt("max-generations"),
+             config.getInt("min-generations"),
+             config.getInt("trunk-radi"),
+             config.getInt("trunk-height"),
+             config.getInt("crown-radi"),
+             config.getInt("crown-height"),
+             config.getString("initial-state"),
+             config.getInt("min-growth-delay"),
+             config.getInt("random-growth-delay"),
+             config.getInt("max-seeds-per-generation"),
+             config.getInt("seed-every-generation"),
+             config.getInt("random-growth"),
+             config.getInt("leaf-decay-delay"));
+    }
 
     ForestConfig(String wood,
                  String leaves,
