@@ -1,0 +1,17 @@
+---
+
+language: java
+jdk:
+  - oraclejdk8
+  - oraclejdk7
+  - openjdk7
+
+deploy:
+  provider: releases
+  api_key:
+    secure: JvPX5BxjUIuI8LSr0dgIG/XEtuB0uAEKrQHlQ4qELRlyLOwlRA5hlwolowsY0gro+ZEZyH+FALKZLkQj8LUH9Rij1/p0h0YSiVyTFVkh0pFGWUcHqOZgZIbel/nmh2Dx3ifay/mIehNLM2MClWN9JXmy8ymMPfriEvjbs0HvTFR+1JDYxH3uPJ4rIj9OG5pufiu4Nf/oAsIX4NrfDLUsQSGkeY0MBNYB28vipQ2lSB4g84VIbTdjf99SlihEg0CZu2jN/rzWbvIIV6wxuzmeC1DOzrleb8MpCsxn5YGsLkJwY8d9MfwZkLEqETlIjXHX72/Kj72iqeW8DALuMG5jQVpI8sKfH3DXFO2avE/CsTuNfkZiqIX3JpuOrPk2tJn9Po0VWcWvNFrjilJWM/yOh+RGwh2/8qhX9Eec70Bfz1/4qPZY+Vs0R1GsfPPywbT1Yw08wLDXpqz4i8xAXp2aUfaGSvPfc+XnYrJkipX1o0pEgp2razR6vlyRRCjGzRp32vQ4Ft21LyYYZGSOIOiTXzLbJWh8Xw4E//hBzYNiNyqC2B9B9JIpv4Q0fubBmdUw1FTzIzVo19iH7RBkCiAWqoESBHedi4zgondx1E6Hnm5uT5cb36nAAs0vTUEG1/GhY1tpXustt8u8oi0obxOZv42ENzH1Ua5BH7rKIRO9Kk4=
+  file: build/libs/server-plugin-forest.jar
+  on:
+    repo: konstructs/server-plugin-forest
+    tags: true
+    jdk: openjdk7
