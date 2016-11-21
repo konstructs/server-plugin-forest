@@ -24,6 +24,7 @@ public class ForestConfig {
     private final int seedEveryGeneration;
     private final int randomGrowth;
     private final int leafDecayDelay;
+    private final int leaveSaplingProbability;
 
     ForestConfig(Config config) {
         this(config.getString("wood-block"),
@@ -45,7 +46,8 @@ public class ForestConfig {
              config.getInt("max-seeds-per-generation"),
              config.getInt("seed-every-generation"),
              config.getInt("random-growth"),
-             config.getInt("leaf-decay-delay"));
+             config.getInt("leaf-decay-delay"),
+             config.getInt("leave-sapling-probability"));
     }
 
     ForestConfig(String wood,
@@ -67,7 +69,8 @@ public class ForestConfig {
                  int maxSeedsPerGeneration,
                  int seedEveryGeneration,
                  int randomGrowth,
-                 int leafDecayDelay) {
+                 int leafDecayDelay,
+                 int leaveSaplingProbability) {
         this.wood = BlockTypeId.fromString(wood);
         this.leaves = BlockTypeId.fromString(leaves);
         this.thinLeaves = BlockTypeId.fromString(thinLeaves);
@@ -88,6 +91,7 @@ public class ForestConfig {
         this.seedEveryGeneration = seedEveryGeneration;
         this.randomGrowth = randomGrowth;
         this.leafDecayDelay = leafDecayDelay;
+        this.leaveSaplingProbability = leaveSaplingProbability;
     }
 
     public BlockTypeId getWood() {
@@ -149,5 +153,8 @@ public class ForestConfig {
     }
     public int getLeafDecayDelay() {
         return leafDecayDelay;
+    }
+    public int getLeaveSaplingProbability() {
+        return leaveSaplingProbability;
     }
 }

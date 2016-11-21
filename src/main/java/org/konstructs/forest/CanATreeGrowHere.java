@@ -1,6 +1,7 @@
 package org.konstructs.forest;
 
 import java.util.Map;
+import java.util.Random;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
@@ -10,6 +11,7 @@ import konstructs.api.*;
 import konstructs.api.messages.BoxQueryResult;
 
 class CanATreeGrowHere extends KonstructsActor {
+    private final Random random = new Random();
     private final Position position;
     private final ForestConfig config;
     private final BlockTypeId leaves;
@@ -50,12 +52,14 @@ class CanATreeGrowHere extends KonstructsActor {
 
     private void canGrow() {
         getContext().parent().tell(new PlantTree(position), getSelf());
-        getContext().stop(getSelf()); /* We are done, let's die*/
+        getContext().stop(getSelf()); /* We are done, let's die */
     }
 
     private void canNotGrow() {
-        replaceWithVacuum(saplingFilter, position); /* Remove the sapling */
-        getContext().stop(getSelf()); /* We are done, let's die*/
+        if(random.nextInt(10000) > config.getLeaveSaplingProbability()) {
+            replaceWithVacuum(saplingFilter, position); /* Remove the sapling */
+        }
+        getContext().stop(getSelf()); /* We are done, let's die */
     }
 
     @Override
